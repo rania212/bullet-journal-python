@@ -1,4 +1,4 @@
-# Bullet Journal — Bibliothèque Python
+# Bullet Journal - Bibliothèque Python
 
 ## Présentation du projet
 Ce projet est réalisé dans le cadre de notre formation en école d'ingénieur à CY Tech.
@@ -106,9 +106,3 @@ L'architecture détaillée et les exemples d'utilisation seront ajoutés lorsque
 - **BOUSFIHA Rania**
 - **HALIL Kenza**
 - **HIDAYA**
-
-
-# Équipe du projet
-BOUSFIHA Rania
-HALIL Kenza
-HIDAYA
