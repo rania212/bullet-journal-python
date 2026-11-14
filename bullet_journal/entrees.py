@@ -1,15 +1,23 @@
 
-"""Classes pour gérer les entrées du Bullet Journal."""
+"""Classes des entrées du Bullet Journal."""
 
 from abc import ABC, abstractmethod
 from datetime import date, time
 from uuid import uuid4
+import logging
 
-from bullet_journal.exceptions import NomInvalide, TransitionEtatInvalide
+from bullet_journal.exceptions import (
+    NomInvalide,
+    DateInvalide,
+    TransitionEtatInvalide
+)
+
+
+logger = logging.getLogger(__name__)
 
 
 class Entree(ABC):
-    """Classe mère pour les entrées du Bullet Journal."""
+    """Classe mère commune aux tâches, événements et notes."""
 
     def __init__(
         self,
@@ -17,28 +25,41 @@ class Entree(ABC):
         description: str,
         date_log: date | None = None
     ) -> None:
+        """Initialise les informations communes d'une entrée."""
 
-        if not nom.strip():
+        if not isinstance(nom, str) or not nom.strip():
             raise NomInvalide("Le nom ne peut pas être vide.")
 
+        if date_log is None:
+            date_log = date.today()
+
+        if not isinstance(date_log, date):
+            raise DateInvalide("La date du journal est invalide.")
+
         self.id = str(uuid4())
-        self.nom = nom
+        self.nom = nom.strip()
         self.description = description
         self.date_creation = date.today()
+        self.date_log = date_log
+        self.signifiants: list[str] = []
 
-        if date_log is None:
-            self.date_log = date.today()
-        else:
-            self.date_log = date_log
+    def ajouter_signifiant(self, signifiant: str) -> None:
+        """Ajoute un signifiant de priorité ou d'idée."""
+
+        if signifiant not in ("*", "!"):
+            raise ValueError("Signifiant invalide.")
+
+        if signifiant not in self.signifiants:
+            self.signifiants.append(signifiant)
 
     @abstractmethod
     def symbole(self) -> str:
-        """Retourne le symbole de l'entrée."""
+        """Retourne le symbole correspondant à l'entrée."""
         pass
 
 
 class Tache(Entree):
-    """Classe qui représente une tâche du Bullet Journal."""
+    """Représente une tâche du Bullet Journal."""
 
     def __init__(
         self,
@@ -46,48 +67,54 @@ class Tache(Entree):
         description: str,
         date_log: date | None = None
     ) -> None:
+        """Crée une tâche avec l'état à faire."""
 
         super().__init__(nom, description, date_log)
-        self.etat = "a_faire"
+        self._etat = "a_faire"
+
+    @property
+    def etat(self) -> str:
+        """Retourne l'état actuel de la tâche."""
+        return self._etat
+
+    def _changer_etat(self, nouvel_etat: str) -> None:
+        """Change l'état si la tâche est encore à faire."""
+
+        if self._etat != "a_faire":
+            logger.error(
+                "Changement d'état interdit pour la tâche %s",
+                self.id
+            )
+            raise TransitionEtatInvalide(
+                "Impossible de modifier cette tâche."
+            )
+
+        self._etat = nouvel_etat
+        logger.info(
+            "Tâche %s : nouvel état %s",
+            self.id,
+            nouvel_etat
+        )
 
     def terminer(self) -> None:
         """Marque la tâche comme terminée."""
-        if self.etat != "a_faire":
-            raise TransitionEtatInvalide(
-                "Cette tâche ne peut pas être terminée."
-            )
-
-        self.etat = "terminee"
+        self._changer_etat("terminee")
 
     def abandonner(self) -> None:
         """Marque la tâche comme abandonnée."""
-        if self.etat != "a_faire":
-            raise TransitionEtatInvalide(
-                "Cette tâche ne peut pas être abandonnée."
-            )
-
-        self.etat = "abandonnee"
+        self._changer_etat("abandonnee")
 
     def migrer(self) -> None:
         """Marque la tâche comme migrée."""
-        if self.etat != "a_faire":
-            raise TransitionEtatInvalide(
-                "Cette tâche ne peut pas être migrée."
-            )
-
-        self.etat = "migree"
+        self._changer_etat("migree")
 
     def planifier(self) -> None:
         """Marque la tâche comme planifiée."""
-        if self.etat != "a_faire":
-            raise TransitionEtatInvalide(
-                "Cette tâche ne peut pas être planifiée."
-            )
-
-        self.etat = "planifiee"
+        self._changer_etat("planifiee")
 
     def symbole(self) -> str:
         """Retourne le symbole selon l'état de la tâche."""
+
         symboles = {
             "a_faire": "•",
             "terminee": "×",
@@ -96,10 +123,11 @@ class Tache(Entree):
             "abandonnee": "~"
         }
 
-        return symboles[self.etat]
+        return symboles[self._etat]
+
 
 class Evenement(Entree):
-    """Classe qui représente un événement du journal."""
+    """Représente un événement du Bullet Journal."""
 
     def __init__(
         self,
@@ -109,6 +137,13 @@ class Evenement(Entree):
         heure: time | None = None,
         date_log: date | None = None
     ) -> None:
+        """Crée un événement avec une date et une heure facultative."""
+
+        if not isinstance(date_evenement, date):
+            raise DateInvalide("La date de l'événement est invalide.")
+
+        if heure is not None and not isinstance(heure, time):
+            raise DateInvalide("L'heure de l'événement est invalide.")
 
         if date_log is None:
             date_log = date_evenement
@@ -123,7 +158,7 @@ class Evenement(Entree):
 
 
 class Note(Entree):
-    """Classe qui représente une note du journal."""
+    """Représente une note du Bullet Journal."""
 
     def symbole(self) -> str:
         """Retourne le symbole d'une note."""

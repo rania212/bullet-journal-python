@@ -1,14 +1,19 @@
 
-"""Exceptions utilisées dans le Bullet Journal."""
+"""Exceptions personnalisées du Bullet Journal."""
 
 
 class ErreurBulletJournal(Exception):
-    """Classe de base pour les erreurs du journal."""
+    """Classe mère des erreurs du Bullet Journal."""
     pass
 
 
 class NomInvalide(ErreurBulletJournal):
-    """Erreur lorsque le nom d'une entrée est vide."""
+    """Erreur lorsqu'une entrée possède un nom invalide."""
+    pass
+
+
+class DateInvalide(ErreurBulletJournal):
+    """Erreur lorsqu'une date ou une heure est invalide."""
     pass
 
 
