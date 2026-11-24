@@ -1,0 +1,31 @@
+name: Verification du projet Python
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verification:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Recuperer le projet
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer les outils
+        run: |
+          python -m pip install -r requirements.txt
+
+      - name: Verifier PEP 8
+        run: pycodestyle bullet_journal tests
+
+      - name: Verifier les docstrings
+        run: pydocstyle --convention=google bullet_journal
+
+      - name: Executer les tests
+        run: python -m pytest -v
