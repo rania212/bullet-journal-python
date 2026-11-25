@@ -42,14 +42,14 @@ def afficher_journal_jour(journal: Journal, jour: date) -> str:
     # On recupere les entrees du jour 
     entrees = journal.afficher_jour(jour)
 
-    # On prepare le titre avec la date au format jour/mois/annee
+    # On prepare le titre avec la date au format: jour/mois/annee
     titre = "Journal du " + jour.strftime("%d/%m/%Y")
 
     # Si aucune entree n'existe pour ce jour
     if not entrees:
         return titre + "\nAucune entrée pour cette journée."
 
-    # Sinon, on affiche le titre et toutes les entrees
+    # Sinon on affiche le titre et toutes les entrees
     return titre + "\n" + afficher_entrees(entrees)
 
 
