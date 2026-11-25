@@ -1,4 +1,3 @@
-
 # Verification automatique du projet Bullet Journal
 name: Verification du projet Python
 
@@ -14,7 +13,7 @@ jobs:
     # GitHub utilise un ordinateur Linux
     runs-on: ubuntu-latest
 
-    # Les etapes sont executees dans cet ordre
+    # Les etapes sont executees dans cet ordre:
     steps:
 
       # Recupere les fichiers du projet sur GitHub
