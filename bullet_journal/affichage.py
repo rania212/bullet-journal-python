@@ -53,9 +53,7 @@ def afficher_journal_jour(journal: Journal, jour: date) -> str:
     return titre + "\n" + afficher_entrees(entrees)
 
 
-def afficher_journal_mois(
-    journal: Journal, annee: int, mois: int
-) -> str:
+def afficher_journal_mois(journal: Journal, annee: int, mois: int) -> str:
     """Retourne les entrées d'un mois."""
 
     # On recupere les entrees du mois
