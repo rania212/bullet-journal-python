@@ -31,18 +31,14 @@ def configurer_logs(dossier: str = "logs") -> None:
     )
 
     #On cree le fichier qui contient les messages de debug
-    debug_handler = logging.FileHandler(
-        chemin / "debug.log", encoding="utf-8"
-    )
+    debug_handler = logging.FileHandler(chemin / "debug.log", encoding="utf-8")
 
     #On enregistre les messages a partir du niveau DEBUG
     debug_handler.setLevel(logging.DEBUG)
     debug_handler.setFormatter(format_logs)
 
     #On cree un deuxieme fichier pour les erreurs
-    erreur_handler = logging.FileHandler(
-        chemin / "erreurs.log", encoding="utf-8"
-    )
+    erreur_handler = logging.FileHandler(chemin / "erreurs.log", encoding="utf-8")
 
     #On enregistre uniquement les erreurs et les messages plus graves
     erreur_handler.setLevel(logging.ERROR)
